@@ -6,8 +6,8 @@ plugins {
     kotlin("jvm") version "2.0.20"
     kotlin("plugin.serialization") version "2.0.20"
 }
-group = "de.tarikweiss"
-version = "1.0-SNAPSHOT"
+group = "de.tarikweiss.pdfqr"
+version = "1.0"
 repositories {
     mavenCentral()
 }
@@ -31,4 +31,17 @@ tasks.test {
 }
 kotlin {
     jvmToolchain(21)
+}
+
+tasks.create("fatJar", Jar::class) {
+    group = "my tasks" // OR, for example, "build"
+    description = "Creates a self-contained fat JAR of the application that can be run."
+    manifest.attributes["Main-Class"] = "de.tarikweiss.pdfqr.MainKt"
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    val dependencies = configurations
+        .runtimeClasspath
+        .get()
+        .map(::zipTree)
+    from(dependencies)
+    with(tasks.jar.get())
 }
